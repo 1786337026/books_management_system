@@ -1,0 +1,229 @@
+basePath: /api/v1
+definitions:
+  model.BookInfo:
+    properties:
+      author:
+        type: string
+      id:
+        type: integer
+      price:
+        type: string
+      publisher:
+        type: string
+      title:
+        type: string
+    type: object
+host: localhost
+info:
+  contact:
+    email: chaoxu051103@gmail.com
+    name: Xuchao
+  description: 用户的基本功能 读者和管理员权限的区分 对图书的增删改查
+  title: 图书管理系统
+  version: "1.0"
+paths:
+  /add-book:
+    post:
+      consumes:
+      - application/json
+      description: 只有管理员可以添加图书
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Book added successfully
+          schema:
+            type: string
+        "403":
+          description: Forbidden"  // 403 Forbidden 错误
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 添加图书（管理员专用）
+      tags:
+      - books
+  /book/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 通过图书 ID 获取特定图书的详细信息
+      parameters:
+      - description: 图书ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取图书信息
+          schema:
+            $ref: '#/definitions/model.BookInfo'
+        "403":
+          description: 权限不足
+          schema:
+            type: string
+        "404":
+          description: 图书未找到
+          schema:
+            type: string
+        "500":
+          description: 内部服务器错误
+          schema:
+            type: string
+      summary: 获取单个图书的详细信息
+      tags:
+      - books
+  /books:
+    get:
+      consumes:
+      - application/json
+      description: 获取系统中所有的图书，读者可以访问
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/model.BookInfo'
+            type: array
+        "403":
+          description: Forbidden"  // 403 Forbidden 错误
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 获取所有图书
+      tags:
+      - books
+  /delete-book/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 根据图书 ID 删除图书
+      parameters:
+      - description: 图书ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功删除图书
+          schema:
+            type: string
+        "400":
+          description: 请求格式错误
+          schema:
+            type: string
+        "404":
+          description: 图书未找到
+          schema:
+            type: string
+        "500":
+          description: 内部服务器错误
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 删除图书
+      tags:
+      - books
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: 提供用户名和密码进行登录，登录成功返回 JWT Token，用于后续的身份验证
+      parameters:
+      - description: 用户名
+        in: body
+        name: username
+        required: true
+        schema:
+          type: string
+      - description: 密码
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功登录，返回 token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 请求格式错误
+          schema:
+            type: string
+        "401":
+          description: 用户名或密码错误
+          schema:
+            type: string
+        "500":
+          description: 内部服务器错误
+          schema:
+            type: string
+      summary: 用户登录，生成并返回 JWT Token
+      tags:
+      - auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: 用户提供用户名、密码等信息，完成注册后返回 JWT Token，用于后续的身份验证
+      parameters:
+      - description: 用户名
+        in: body
+        name: username
+        required: true
+        schema:
+          type: string
+      - description: 密码
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 成功注册，返回 token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 请求格式错误
+          schema:
+            type: string
+        "409":
+          description: 用户名已存在
+          schema:
+            type: string
+        "500":
+          description: 内部服务器错误
+          schema:
+            type: string
+      summary: 用户注册，创建新用户并返回 JWT Token
+      tags:
+      - auth
+swagger: "2.0"
