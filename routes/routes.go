@@ -35,7 +35,7 @@ func NewRouter() *http.ServeMux {
 			middleware.AdminAuthMiddleware(handlers.DeleteBookHandler),
 		)),
 	) // 管理员删除图书
-	log.Println("Server is running on port 8080...")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Println("Server is running on port 8081...")
+	log.Fatal(http.ListenAndServe(":8081", r))
 	return r
 }
